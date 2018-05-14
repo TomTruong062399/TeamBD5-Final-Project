@@ -2,24 +2,20 @@
 
 ## Project Description
 
+### What is the dataset we are working with?  
 
+The dataset we are working with is data sourced from the **Twitter API** associated with the activity of Twitter users. The relevant information that will be used throughout this project is collected by Twitter through their **standard** search API that samples recent Tweets published in the past _7 days_. This data will subsequently be used to analyze the level of social acceptance and trends of various politicians. This project will also be formatted as a **live website** that will be intuitive and visually appealing for the end users. As a result, the use of this data will provide the user with _detailed_ information related to various politicians in order to gain a better understanding of the current/recent political field.
 
+### Who is the target audience?
 
-###What is the dataset you'll be working with?  Please include background on who collected the data, where you accessed it, and any additional information we should know about how this data came to be.
+Our target audience is the wide umbrella of _individuals_ or _groups_ that are interested in data related to various politicians. These groups or individuals include, but are not limited to, politicians, political news reporters/journalists, and political campaign staff. The reason as to why they would be interested in our data, would be because they want to understand how certain politicians are viewed by the public. Access to this information will allow them to adjust their political strategies depending on the results. For instance, **political campaign staff** in particular, may be interested in using our dataset because they can estimate how their politicians are viewed in general through what words are largely related to the politician and set their election strategies and target their voters accordingly.
 
+### What does your audience want to learn from your data?
 
-###Who is your target audience?  Depending on the domain of your data, there may be a variety of audiences interested in using the dataset.  You should hone in on one of these audiences.
-Our target audience include, but not limited to, politicians, political news reporters/journalists, and political campaign staffs because they want to and need to understand how themselves or certain politicians are viewed from the public and set their political strategies in accordance. 
-For instance, **political campaign staffs** in particular may be interested in using our dataset because they can estimate how their politicians are viewed in general by what words are largely related to the politician and set their election strategies and target their voters accordingly. 
-
-###What does your audience want to learn from your data?  Please list out at least 3 specific questions that your project will answer for your audience.
-More specifically, our dataset can give political campaign staffs three important information:
-  **Firstly**, it can show them how their own politicians are viewed to the public by looking at what words are generally related to them.
-  **Secondly**, our dataset can be used to understand how other, competing, politicians are viewed to the public and set election strategies to precisely address their policies and perhaps move their voters.
-  **Thirdly**, political campaign staffs can learn what have been the most popular and/or controversial policies of certain politicians, to understand the American public's interest better and to design more effective political agenda for political campaigns.
-
-
-
+More specifically, our dataset could provide political campaign staff with information addressing three important queries:
+- **Firstly**, the data could show them how their own politicians are viewed by the public through analyzing the trends of vocabulary/terms that are generally associated with them.
+- **Secondly**, the dataset could be used to understand how opposing politicians are viewed by the public and provide information that could be leveraged while setting election strategies to precisely address their policies and perhaps move their voters.
+- **Thirdly**, political campaign staff could learn what have been the most popular and/or controversial policies of certain politicians to better understand the American public's interest and to design more effective political agendas for their campaigns.
 
 ## Technical Description
 We will be reading this data via Twitter's API
