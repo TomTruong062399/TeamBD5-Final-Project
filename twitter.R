@@ -9,3 +9,8 @@ setup_twitter_oauth(consumer_public, consumer_private, public_key, private_key)
 conservative_tweets <- searchTwitter("#Conservatives") 
 liberal_tweets <- searchTwitter("#Liberals")
 
+gun_control_tweets <- searchTwitter("#gun control")
+anti_gun_control_tweets <- searchTwitter("#noguncontrol")
+
+abortion_tweets <- searchTwitter("#abortion")
+anti_abortion_tweets <- searchTwitter("#noabortion")
