@@ -1,5 +1,6 @@
 library(httr)
 library(jsonlite)
+# install.packages("twitteR")
 library(twitteR)
 
 source("api-keys.R")
