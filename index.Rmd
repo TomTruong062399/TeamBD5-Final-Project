@@ -13,7 +13,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Purpose
 
-The purpose of this project is to provide **political campaign staff** with information regarding **politicans** and how they are viewed by the public through _keywords used on Twitter_. They can use this information to see what _words are associated with particular politicians_, so they can set **election strategies** and **target their voters accordingly**.
+The purpose of this project is to provide **political campaign staff** with
+information regarding **politicans** and how they are viewed by the public
+through _keywords used on Twitter_. They can use this information to see what
+_words are associated with particular politicians_, so they can set
+**election strategies** and **target their voters accordingly**.
 
 ## Source of the Data
 
@@ -21,54 +25,216 @@ We used the [_Twitter API's_](https://developer.twitter.com/en.html)
 [**Search Tweets**](https://developer.twitter.com/en/docs/tweets/search/api-reference/get-search-tweets.html)
 feature with the assistance of the
 [**TwitteR** package](https://cran.r-project.org/web/packages/twitteR/twitteR.pdf)
-to make things easier to code.
+to extract data from **Twitter**.
 
 ## About the Topic
 
+Inspired by the _chaos caused by politics and the internet_ in recent times, we
+decided to make this application to revolve around **figuring out how certain
+politicians are viewed by the public eye**.
+_What wouldn't be better by searching about them through Tweets?_    
+
+Even though our project allows anything to be input as a hashtag search on
+Twitter, for the sake of our **Final Project** political related search terms is
+only appropriate. Our project features:  
+- **A Sample of 100 Tweets/Retweets by Term**  
+- **_"Sentiment Values" (positive to negative)_ on Tweets by Term and
+Retweet Count**  
+- **The Top 5 Tweets/Retweets based on popularity by Term**  
+- **A _Word Cloud_ that takes a Term and makes the _most associated words_ into
+a cloud like shape**
 
 
 ## About our Code
 
-## Inputs and Outputs
+We used quite a few custom packages to make this project easier than it looks.
+Besides the main
+[**TwitteR** package](https://cran.r-project.org/web/packages/twitteR/twitteR.pdf),
+we used:  
+- [**tidytext**](https://cran.r-project.org/web/packages/tidytext/tidytext.pdf)
+_(to help Text Mine using `dplyr` and `ggplot2`)_  
+- [**ggpubr**](https://cran.r-project.org/web/packages/ggpubr/ggpubr.pdf)
+_(to help customize our `ggplot2` plots)_  
+- [**tm**](https://cran.r-project.org/web/packages/tm/tm.pdf)
+_(to help Text Mine through tweet corpuses)_  
+- [**sentimentr**](https://cran.r-project.org/web/packages/sentimentr/sentimentr.pdf)
+_(to help determine the sentiment towards certain words)_  
+- [**wordcloud**](https://cran.r-project.org/web/packages/wordcloud/wordcloud.pdf)
+_(to help make the word cloud visualization)_  
 
-You can embed Shiny inputs and outputs in your document. Outputs are automatically updated whenever inputs change.  This demonstrates how a standard R plot can be made interactive by wrapping it in the Shiny `renderPlot` function. The `selectInput` and `sliderInput` functions create the input widgets used to drive the plot.
+```{r, echo = FALSE, message = FALSE}
+library(shiny)
+library(plotly)
+library(tidytext)
+library(ggpubr)
+library(httr)
+library(jsonlite)
+library(dplyr)
+library(ggplot2)
+library(twitteR)
+library(shinythemes)
 
-```{r eruptions, echo=FALSE}
-inputPanel(
-  selectInput("n_breaks", label = "Number of bins:",
-              choices = c(10, 20, 35, 50), selected = 20),
+source("api-keys.R")
+source("./scripts/key_terms.R")
+
+setup_twitter_oauth(consumer_public, consumer_private, public_key, private_key)
+
+shinyApp(
+  ui <- shinyUI(
+  navbarPage(
+    "Final Project",
+    tabPanel(
+      "Sample by Term",
+      titlePanel("Sample 100 Tweets/Retweets by Term"),
+      sidebarLayout(
+        sidebarPanel(
+          textInput("term",
+                    label = "Search for a Term",
+                    value = "Trump"
+          )
+        ),
+        mainPanel(
+          tableOutput("key_tweets")
+        )
+      )
+      ),
+      tabPanel(
+        "HashTag",
+        titlePanel("HashTag"),
+        sidebarLayout(
+          sidebarPanel(
+            width = 3,
+            textInput("hashtag",
+                      label = "Search for a Term",
+                      value = "Trump")
+          ),
+          mainPanel(
+            plotOutput("plot"),
+            plotOutput("plot2")
+          )
+        )
+      ),
+      tabPanel(
+        "Most Retweeted",
+        titlePanel("Top 5 Tweets/Retweets by Retweets"),
+        sidebarLayout(
+          sidebarPanel(
+            textInput("top_5",
+                      label = "Top 5 Tweets/Retweets from a Random Sample",
+                      value = "Trump"
+            ),
+            sliderInput("quantity",
+                        label = "Select of Sample Size",
+                        min = 1,
+                        max = 1000,
+                        value = 500,
+                        ticks = TRUE,
+                        animate = FALSE
+            )
+          ),
+          mainPanel(
+            plotlyOutput("tweets_plot"),
+            tableOutput("tweets_tbl")
+          )
+        )
+      )
+    )
+  ),
+
+  server = function(input, output) {
+    output$key_tweets <- renderTable({
+      return(term_search(input$term))
+    })
+    tweets <- reactive({
+      popular <- return(term_top_5(input$top_5, input$quantity))
+    })
+    output$tweets_plot <- renderPlotly({
+      return(plot_tweets(tweets()))
+    })
+    output$tweets_tbl <- renderTable({
+      tweets()[, c("Twitter Handle", "Tweet", "Number of Retweets")]
+    })
+
+
+    output$plot <- renderPlot({
+      tweet_info <- searchTwitter(paste0("#", input$hashtag), 50)
+      tweet_info_df <- twListToDF(tweet_info)
+
+      text <- data_frame(tweet = tweet_info_df$text) %>%
+        unnest_tokens(word, tweet)
+
+      tweet_score <- text %>%
+        inner_join(get_sentiments("afinn"), by = "word") %>%
+        count(word, score, sort = TRUE) %>%
+        ungroup()
+
+      # I split these up for clarity, although they could be combined
+      tweet_sentiment <- text %>%
+        inner_join(get_sentiments("nrc"), by = "word") %>%
+        count(sentiment, sort = TRUE) %>%
+        ungroup() %>%
+        rename(word = sentiment)
+
+      binary_sentiment <- tweet_sentiment %>%
+        inner_join(get_sentiments("bing"), by = "word") %>%
+        ungroup() %>%
+        arrange(n)
+
+
+   is.data.frame(binary_sentiment)
+      total_score <- tweet_score$score * tweet_score$n
+
+
+      # I would like to point out that it was NOT easy to get those colors right
+      positivity_plot <- ggplot(data = tweet_score, aes(x = factor(word),
+                                                        y = total_score)) +
+        geom_bar(aes(fill = total_score < 0), stat = "identity") +
+        theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+        scale_fill_manual(guide = FALSE, breaks = c(TRUE, FALSE),
+                          values = c("green", "red")) +
+        labs(
+          x = "Most Common Words in Tweets",
+          y = "Positivity Score",
+          title = "Positivity of Tweets",
+          fill = "Positivity"
+        )
+
+      # Using only 3 through 8 since 'positive' and 'negative are by
+      # far the most popular sentiments, although they cannot be used
+
+      sentiment <- ggplot(binary_sentiment, aes(x = factor(word,
+                                              levels = unique(word)), y = n)) +
+        geom_bar(stat = "identity", aes(fill = factor(sentiment))) +
+        coord_flip() +
+        labs(
+          x = "Most Common Emotions",
+          y = "Frequency",
+          title = "Emotions Conveyed by Tweets",
+          fill = "Positivity"
+        )
+
+      ggarrange(sentiment, positivity_plot,
+        labels = c("A", "B"),
+        ncol = 2, nrow = 1
+      )
+    })
+
+
+    output$plot2 <- renderPlot({
+      search <- searchTwitter(input$hashtag)
+      popular_tweets <- twListToDF(search)
+      bar_stuff <- popular_tweets %>%
+        select(screenName, retweetCount)
+
+
+      bar_plot <- ggplot(bar_stuff, aes(screenName, retweetCount))
+      bar_plot + geom_bar(stat = "identity", fill = "#FF6666") +
+        xlab("Usernames") +
+        ylab("Retweet Count") +
+        theme(axis.text.x = element_text(angle = 90, hjust = 1))
+    })
+  },
   
-  sliderInput("bw_adjust", label = "Bandwidth adjustment:",
-              min = 0.2, max = 2, value = 1, step = 0.2)
-)
-
-renderPlot({
-  hist(faithful$eruptions, probability = TRUE, breaks = as.numeric(input$n_breaks),
-       xlab = "Duration (minutes)", main = "Geyser eruption duration")
-  
-  dens <- density(faithful$eruptions, adjust = input$bw_adjust)
-  lines(dens, col = "blue")
-})
-```
-
-## Embedded Application
-
-It's also possible to embed an entire Shiny application within an R Markdown document using the `shinyAppDir` function. This example embeds a Shiny application located in another directory:
-
-```{r tabsets, echo=FALSE}
-shinyAppDir(
-  system.file("examples/06_tabsets", package = "shiny"),
-  options = list(
-    width = "100%", height = 550
-  )
+  options = list(height = 1000)
 )
 ```
-
-Note the use of the `height` parameter to determine how much vertical space the embedded application should occupy.
-
-You can also use the `shinyApp` function to define an application inline rather then in an external directory.
-
-In all of R code chunks above the `echo = FALSE` attribute is used. This is to prevent the R code within the chunk from rendering in the document alongside the Shiny components.
-
-
-

@@ -8,9 +8,6 @@ library(tidyr)
 library(ggplot2)
 library(ggpubr)
 
-?get_sentiments
-?inner_join
-
 conservative_tweets <- searchTwitter("#Conservatives")
 conservative_df <- twListToDF(conservative_tweets)
 

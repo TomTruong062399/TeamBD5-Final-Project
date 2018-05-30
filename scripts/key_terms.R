@@ -1,7 +1,6 @@
 library(httr)
 library(jsonlite)
 library(twitteR)
-
 library(dplyr)
 library(plotly)
 
