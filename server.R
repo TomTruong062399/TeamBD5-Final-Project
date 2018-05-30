@@ -9,7 +9,6 @@ library(twitteR)
 
 source("api-keys.R")
 source('./scripts/key_terms.R')
-source("./scripts/SamPartFinalINFO201.R")
 
 setup_twitter_oauth(consumer_public, consumer_private, public_key, private_key)
 
@@ -27,6 +26,8 @@ shinyServer(
     output$tweets_tbl <- renderTable({
       tweets()[, c("Twitter Handle", "Tweet", "Number of Retweets")]
     })
+    
+    
     output$plot <- renderPlot({
       
       tweet_info <- searchTwitter(paste0("#", "guns"), 30)
