@@ -5,8 +5,7 @@ library(ggpubr)
 
 ui <- shinyUI(
   navbarPage(
-    "Project Name Here",
-    
+    "Final Project",
     tabPanel(
       "Sample by Term",
       titlePanel("Sample 100 Tweets/Retweets by Term"),
@@ -22,14 +21,13 @@ ui <- shinyUI(
         )
       )
       ),
-      
       tabPanel(
         "HashTag",
         titlePanel("HashTag"),
         sidebarLayout(
           sidebarPanel(
             width = 3,
-            textInput("hashtag", 
+            textInput("hashtag",
                       label = "Search for a Term",
                       value = "Trump")
           ),
