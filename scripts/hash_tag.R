@@ -21,6 +21,18 @@ hastag_search <- function(term) {
   return(tweets_2)
 }
 
+most_retweeted <- function(term) {
+  sample_tweets <- searchTwitter(key_term) 
+  popular_tweets <- twListToDF(sample_tweets)
+  popular_tweets <- popular_tweets %>% 
+    select(text, retweetCount) %>%
+    rename("Retweet Count" = retweetCount,
+           "Tweet" = text) %>% 
+    filter("Retweet Count" = max("Retweet Count"))
+  
+  return(popular_tweets)
+}
+
 plot_tweets_retweet_hash_tag <- function(dataset) {
   bar_plot <-ggplot(dataset, aes("Tweet", "Retweet Count"))
   bar_plot + geom_bar(stat = "identity")  
