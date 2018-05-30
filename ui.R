@@ -34,8 +34,7 @@ ui <- shinyUI(
                       value = "Trump")
           ),
           mainPanel(
-            plotOutput("plot"),
-            plotOutput("plot2")
+            plotOutput("plot")
           )
         )
       ),
