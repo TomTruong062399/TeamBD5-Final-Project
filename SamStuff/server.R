@@ -8,7 +8,7 @@ my_server <- function(input, output) {
   #This is using the input from the ui to get a hashtag name
   output$plot <- renderPlot({
     
-    tweet_info <- searchTwitter(paste0("#", "guns"), 30)
+    tweet_info <- searchTwitter(paste0("#", input$hashtag), 30)
     tweet_info_df <- twListToDF(tweet_info)
     
     text <- data_frame(tweet = anti_gun_control_df$text) %>%
@@ -51,6 +51,11 @@ my_server <- function(input, output) {
            y = "Frequency",
            title = "Emotions Conveyed by Tweets",
            fill = "Positivity")
-    sentiment
+    ggarrange(sentiment, positivity_plot, 
+              labels = c("A", "B"),
+              ncol = 2, nrow = 1)
+    
+    
+    
   })
 }

@@ -1,5 +1,7 @@
 library(shiny)
 library(plotly)
+library(tidytext)
+library(ggpubr)
 
 ui <- shinyUI(
   navbarPage(
@@ -26,10 +28,13 @@ ui <- shinyUI(
         sidebarLayout(
           sidebarPanel(
             width = 3,
-            textInput("term", label = "Search for Term", value = "#Trump")
+            textInput("hashtag", 
+                      label = "Search for Term", 
+                      value = "#Trump")
           ),
           mainPanel(
-            tableOutput("hash_tag.R")
+            plotOutput("plot")
+            
           )
         )
       ),
