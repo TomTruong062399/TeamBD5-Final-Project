@@ -78,21 +78,25 @@ shinyServer(
           fill = "Positivity"
         )
 
-      popular_tweets <- twListToDF(tweet_info)
+      ggarrange(sentiment, positivity_plot,
+        labels = c("A", "B"),
+        ncol = 2, nrow = 1
+      )
+    })
+
+
+    output$plot2 <- renderPlot({
+      search <- searchTwitter(input$hashtag)
+      popular_tweets <- twListToDF(search)
       bar_stuff <- popular_tweets %>%
         select(screenName, retweetCount)
 
 
       bar_plot <- ggplot(bar_stuff, aes(screenName, retweetCount))
-      bar_plot + geom_bar(stat = "identity") +
-        theme(axis.text.x = element_text(angle = 90, hjust = 1)) 
-
-
-
-      ggarrange(sentiment, positivity_plot, bar_plot,
-        labels = c("A", "B", "C"),
-        ncol = 2, nrow = 2
-      )
+      bar_plot + geom_bar(stat = "identity", fill = "#FF6666") +
+        xlab("Usernames") +
+        ylab("Retweet Count") +
+        theme(axis.text.x = element_text(angle = 90, hjust = 1))
     })
   }
 )
