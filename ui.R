@@ -24,12 +24,16 @@ ui <- shinyUI(navbarPage(
       )
     ),
     tabPanel(
-      "Temp",
-      titlePanel("Temporary"),
+      "HashTag",
+      titlePanel("HashTag"),
       sidebarLayout(
-        sidebarPanel("Left Panel"),
+        sidebarPanel(
+          width = 3,
+          textInput(inputId = "hashtag", "Which hashtag would you like to look up?")),
         mainPanel("Right Panel")
       )
+      
     )
+  
   )
 )

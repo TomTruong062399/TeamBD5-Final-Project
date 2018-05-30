@@ -28,18 +28,10 @@ anti_abortion_df <- twListToDF(anti_abortion_tweets)
 # All data merged
 all_data_merged <- rbind(liberal_df, conservative_df, gun_control_df, anti_gun_control_df, abortion_df, anti_abortion_df)
 
-sum_retweets <- sum(all_data_merged$retweetCount)
-
-tweets_selected <- all_data_merged %>% 
-  select(text)
-
-
 # Attempt at a bar graph, isn't working will figure out tommorrow
-g <- ggplot(aes(tweets_selected, sum_retweets))
-plot <- g + geom_bar(stat="identity", width = 0.5, fill="tomato2") + 
+g <- ggplot(all_data_merged, aes(text, retweetCount))
+g + geom_bar(stat="identity", width = 0.5, fill="tomato2") + 
   labs(title="Bar Chart", 
        subtitle="Manufacturer of vehicles", 
        caption="Source: Frequency of Manufacturers from 'mpg' dataset") +
   theme(axis.text.x = element_text(angle=65, vjust=0.6))
-
-
