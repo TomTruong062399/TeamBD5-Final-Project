@@ -5,16 +5,6 @@ ui <- shinyUI(
   navbarPage(
     "Project Name Here",
     tabPanel(
-      "How do People Feel About this Topic?",
-      sidebarPanel("Hashtag",
-        width = 3,
-        textInput(inputId = "hashtag", "Which hashtag would you like to look up?")
-      ),
-      mainPanel(
-        plotlyOutput("plot")
-      )
-    ),
-    tabPanel(
       "Sample by Term",
       titlePanel("Sample 100 Tweets/Retweets by Term"),
       sidebarLayout(
@@ -31,8 +21,8 @@ ui <- shinyUI(
       mainPanel(
         tableOutput("key_tweets")
       )
-    )
-  ),
+    ),
+    
   tabPanel(
     "HashTag",
     titlePanel("HashTag"),
@@ -44,7 +34,8 @@ ui <- shinyUI(
       mainPanel(
         tableOutput("scripts/twitter.R")
       )
-    ),
+    )
+  ),
     tabPanel(
       "Most Retweeted",
       titlePanel("Top 5 Tweets/Retweets by Retweets"),
@@ -70,4 +61,4 @@ ui <- shinyUI(
       )
     )
   )
-)
+)  
