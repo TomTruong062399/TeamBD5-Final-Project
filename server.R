@@ -31,7 +31,6 @@ shinyServer(
     output$plot <- renderPlot({
       
       tweet_info <- searchTwitter(paste0("#", input$hashtag), 30)
-      tweet_info <- searchTwitter(paste0("#", "Clinton"), 30)
       tweet_info_df <- twListToDF(tweet_info)
       
       text <- data_frame(tweet = tweet_info_df$text) %>%
@@ -51,8 +50,11 @@ shinyServer(
       
       binary_sentiment <- tweet_sentiment %>%
         inner_join(get_sentiments("bing"), by = "word") %>%
-        ungroup()
-      
+        ungroup() %>%
+        arrange(n)
+
+
+   is.data.frame(binary_sentiment)   
       total_score <- tweet_score$score * tweet_score$n
       
       
@@ -68,13 +70,14 @@ shinyServer(
       
       # Using only 3 through 8 since 'positive' and 'negative are by
       # far the most popular sentiments, although they cannot be used
-      sentiment <- ggplot(binary_sentiment[3:8,], aes(x = rev(factor(word, levels = unique(word))), y = n)) +
+      sentiment <- ggplot(binary_sentiment[3:8,], aes(x = factor(word, levels = unique(word)), y = n)) +
         geom_bar(stat= "identity", aes(fill = factor(sentiment))) +
         coord_flip() +
         labs(x = "Most Common Emotions",
              y = "Frequency",
              title = "Emotions Conveyed by Tweets",
              fill = "Positivity")
+      
       ggarrange(sentiment, positivity_plot, 
                 labels = c("A", "B"),
                 ncol = 2, nrow = 1)
