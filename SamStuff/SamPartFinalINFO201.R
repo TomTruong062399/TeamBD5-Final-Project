@@ -9,32 +9,13 @@ library(tidyr)
 library(ggplot2)
 library(ggpubr)
 
-?get_sentiments
-?inner_join
 source("api-keys.R")
-setup_twitter_oauth(consumer_public, consumer_private, public_key, private_key)
 
-
-conservative_tweets <- searchTwitter("#Conservatives") 
-conservative.df <- twListToDF(conservative_tweets)
-
-liberal_tweets <- searchTwitter("#Liberals")
-liberal_df <- twListToDF(liberal_tweets)
-
-
-gun_control_tweets <- searchTwitter("#gun control")
-gun_control_df <- twListToDF(gun_control_tweets)
-
-anti_gun_control_tweets <- searchTwitter("#noguncontrol")
+# Just replace #noabprtion with paste0("#", input$hashtag)
+anti_abortion_tweets <- searchTwitter("#Trump", 30)
 anti_gun_control_df <- twListToDF(anti_gun_control_tweets)
 
-abortion_tweets <- searchTwitter("#abortion")
-anti_abortion_df <- twListToDF(abortion_tweets)
-
-
-anti_abortion_tweets <- searchTwitter("#noabortion", 30)
-anti_gun_control_df <- twListToDF(anti_gun_control_tweets)
-
+#This is the code that should go into renderPlot (everything under here)
 text <- data_frame(tweet = anti_gun_control_df$text) %>%
   unnest_tokens(word, tweet)
 tweet_score <- text %>%
@@ -55,8 +36,6 @@ binary_sentiment <- tweet_sentiment %>%
 
 total_score <- tweet_score$score * tweet_score$n
 
-
-# I would like to point out that it was NOT easy to get those colors right
 positivity_plot <- ggplot(data = tweet_score, aes(x=factor(word), y = total_score)) +
   geom_bar(aes(fill = total_score < 0), stat = "identity") +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
@@ -76,12 +55,7 @@ sentiment <- ggplot(binary_sentiment[3:8,], aes(x = rev(factor(word, levels = un
      title = "Emotions Conveyed by Tweets",
      fill = "Positivity")
 
-ggarrange(sentiment, positivity_plot, 
+arranged_plots <- ggarrange(sentiment, positivity_plot, 
           labels = c("A", "B"),
           ncol = 2, nrow = 1)
-
-
-       
-
-?guide_legend
 

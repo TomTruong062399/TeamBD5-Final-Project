@@ -10,8 +10,12 @@ my_ui <- fluidPage(
                                 "How do People Feel About this Topic?",
                                 sidebarPanel("Hashtag", width = 3,
                                              textInput(inputId = "hashtag", "Which hashtag would you like to look up?")
-                                             )
-                                            
+                                             ),
+                               tabPanel("Thing",
+                                        titlePanel("Thing"),
+                                        plotOutput("plot")
+                                 
+                               )            
                                 )
                     )
 )
