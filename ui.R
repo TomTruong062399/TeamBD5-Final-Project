@@ -1,17 +1,30 @@
 library(shiny)
 library(plotly)
-source("scripts/twitter.R")
 
-ui <- shinyUI(navbarPage(
-  "Insert Project Name",
-  tabPanel(
-    "Sample by Term",
-    titlePanel("Sample 100 Tweets/Retweets by Term"),
-    sidebarLayout(
-      sidebarPanel(
-        textInput("term",
-          label = "Search for a Term",
-          value = "Trump"
+ui <- shinyUI(
+  navbarPage(
+    "Project Name Here",
+      tabPanel(
+        "How do People Feel About this Topic?",
+        sidebarPanel("Hashtag",
+                     width = 3,
+                     textInput(inputId = "hashtag", "Which hashtag would you like to look up?")
+        ),
+        mainPanel(
+          plotlyOutput("plot")
+        )
+      ),
+      tabPanel(
+       "Sample by Term",
+      titlePanel("Sample 100 Tweets/Retweets by Term"),
+      sidebarLayout(
+        sidebarPanel(
+          textInput("term",
+                    label = "Search for a Term",
+                    value = "Trump")
+        ),
+        mainPanel(
+          tableOutput("key_tweets")
         )
       ),
       mainPanel(
@@ -57,4 +70,4 @@ ui <- shinyUI(navbarPage(
       )
     )
   )
-))
+)
