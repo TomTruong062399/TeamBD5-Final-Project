@@ -29,20 +29,10 @@ ui <- shinyUI(
         sidebarLayout(
           sidebarPanel(
             width = 3,
-<<<<<<< HEAD
-            textInput("hashtag", 
-                      label = "Search for Term", 
-                      value = "#Trump")
-          ),
-          mainPanel(
-            plotOutput("plot")
-            
-=======
             textInput(inputId = "hashtag", "Which hashtag would you like to look up?")
           ),
           mainPanel(
             tableOutput("scripts/twitter.R")
->>>>>>> 0ac1be2422f7a058d61677a461dc34fad9b40a8b
           )
         )
       ),
