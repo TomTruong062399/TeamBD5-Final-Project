@@ -68,6 +68,7 @@ ui <- shinyUI(
                  to a Politician"),
       sidebarLayout(
         sidebarPanel(
+          width = 2,
           textInput("Politician",
             label = "Enter Politician Name",
             value = "Trump"
@@ -82,7 +83,7 @@ ui <- shinyUI(
           submitButton(text = "Run")
         ),
         mainPanel(
-          plotOutput("pol_wordcloud")
+          plotOutput("pol_wordcloud", width = "1500px", height = "1000px")
         )
       )
     )
