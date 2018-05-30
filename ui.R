@@ -27,7 +27,7 @@ ui <- shinyUI(navbarPage(
         textInput(inputId = "hashtag", "Which hashtag would you like to look up?")
       ),
       mainPanel(
-        tableOutput("twitter.R")
+        tableOutput("scripts/twitter.R")
       ),
 
       tabPanel(
