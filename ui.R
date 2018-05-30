@@ -18,12 +18,8 @@ ui <- shinyUI(
           tableOutput("key_tweets")
         )
       ),
-      mainPanel(
-        tableOutput("key_tweets")
-      )
-    ),
-    
-  tabPanel(
+  
+    tabPanel(
     "HashTag",
     titlePanel("HashTag"),
     sidebarLayout(
@@ -59,6 +55,7 @@ ui <- shinyUI(
           tableOutput("tweets_tbl")
         )
       )
-    )
   )
-)  
+
+
+)
