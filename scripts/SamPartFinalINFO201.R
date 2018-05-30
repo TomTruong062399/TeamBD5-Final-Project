@@ -1,5 +1,4 @@
 # This is where I wrote all the graph code! (Testing ground)
-# install.packages(tidytext)
 library(tidytext)
 library(httr)
 library(jsonlite)
@@ -9,11 +8,8 @@ library(tidyr)
 library(ggplot2)
 library(ggpubr)
 
-?get_sentiments
-?inner_join
-
-conservative_tweets <- searchTwitter("#Conservatives") 
-conservative.df <- twListToDF(conservative_tweets)
+conservative_tweets <- searchTwitter("#Conservatives")
+conservative_df <- twListToDF(conservative_tweets)
 
 liberal_tweets <- searchTwitter("#Liberals")
 liberal_df <- twListToDF(liberal_tweets)
@@ -54,10 +50,12 @@ total_score <- tweet_score$score * tweet_score$n
 
 
 # I would like to point out that it was NOT easy to get those colors right
-positivity_plot <- ggplot(data = tweet_score, aes(x=factor(word), y = total_score)) +
+positivity_plot <- ggplot(data = tweet_score, aes(x = factor(word),
+                                                  y = total_score)) +
   geom_bar(aes(fill = total_score < 0), stat = "identity") +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-  scale_fill_manual(guide = FALSE, breaks = c(TRUE, FALSE), values=c("green", "red")) +
+  scale_fill_manual(guide = FALSE, breaks = c(TRUE, FALSE),
+                    values = c("green", "red")) +
   labs(x = "Most Common Words in Tweets",
        y = "Positivity Score",
        title = "Positivity of Tweets",
@@ -65,20 +63,14 @@ positivity_plot <- ggplot(data = tweet_score, aes(x=factor(word), y = total_scor
 
 # Using only 3 through 8 since 'positive' and 'negative are by
 # far the most popular sentiments, although they cannot be used
-sentiment <- ggplot(binary_sentiment[3:8,], aes(x = rev(factor(word, levels = unique(word))), y = n)) +
-  geom_bar(stat= "identity", aes(fill = sentiment)) +
+sentiment <- ggplot(binary_sentiment[3:8, ], aes(x = rev(factor(word,
+                                            levels = unique(word))), y = n)) +
+  geom_bar(stat = "identity", aes(fill = sentiment)) +
   coord_flip() +
   labs(x = "Most Common Emotions",
      y = "Frequency",
      title = "Emotions Conveyed by Tweets",
      fill = "Positivity")
-
-ggarrange(sentiment, positivity_plot, 
+ggarrange(sentiment, positivity_plot,
           labels = c("A", "B"),
           ncol = 2, nrow = 1)
-
-
-       
-
-?guide_legend
-
