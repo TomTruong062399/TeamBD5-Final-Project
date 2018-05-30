@@ -112,25 +112,25 @@ shinyServer(
                                      n = input$Number,
                                      resultType = "recent"
       )
-      Sampletweets_text <- sapply(sample_tweets, function(x) x$getText())
-      Sampletweets_text2 <- iconv(
-        Sampletweets_text, "latin1",
+      Sample_tweets_text <- sapply(sample_tweets, function(x) x$getText())
+      Sample_tweets_text2 <- iconv(
+        Sample_tweets_text, "latin1",
         "ASCII//TRANSLIT"
       )
-      Sampletweets_text3 <- iconv(Sampletweets_text2, to = "ASCII//TRANSLIT")
-      Sampletweets_corpus <- Corpus(VectorSource(Sampletweets_text3))
-      Sampletweets_corpus <- tm_map(Sampletweets_corpus, tolower)
-      Sampletweets_corpus <- tm_map(Sampletweets_corpus, removePunctuation)
-      Sampletweets_corpus <- tm_map(
-        Sampletweets_corpus, removeWords,
+      Sample_tweets_text3 <- iconv(Sample_tweets_text2, to = "ASCII//TRANSLIT")
+      Sample_tweets_corpus <- Corpus(VectorSource(Sample_tweets_text3))
+      Sample_tweets_corpus <- tm_map(Sample_tweets_corpus, tolower)
+      Sample_tweets_corpus <- tm_map(Sample_tweets_corpus, removePunctuation)
+      Sample_tweets_corpus <- tm_map(
+        Sample_tweets_corpus, removeWords,
         stopwords(input$lang)
       )
-      Sampletweets_corpus <- tm_map(Sampletweets_corpus, stripWhitespace)
+      Sample_tweets_corpus <- tm_map(Sample_tweets_corpus, stripWhitespace)
       
       # Filter commonly used words for more accurate representation
       
-      Sampletweets_corpus <- tm_map(
-        Sampletweets_corpus, removeWords,
+      Sample_tweets_corpus <- tm_map(
+        Sample_tweets_corpus, removeWords,
         c(
           "trump", "donald", "president", "america",
           "hillary", "americans", "think", "says",
@@ -144,7 +144,7 @@ shinyServer(
         )
       )
       pal2 <- brewer.pal(8, "Dark2")
-      wordcloud(Sampletweets_corpus,
+      wordcloud(Sample_tweets_corpus,
                 random.order = FALSE,
                 colors = pal2
       )
