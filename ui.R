@@ -4,7 +4,6 @@ library(plotly)
 ui <- shinyUI(
   navbarPage(
     "Project Name Here",
-<<<<<<< HEAD
     
       tabPanel(
         "How do People Feel About this Topic?",
@@ -19,9 +18,6 @@ ui <- shinyUI(
         )
       ),
     
-      tabPanel(
-       "Sample by Term",
-=======
     tabPanel(
       "How do People Feel About this Topic?",
       sidebarPanel("Hashtag",
@@ -31,10 +27,12 @@ ui <- shinyUI(
       mainPanel(
         plotlyOutput("plot")
       )
+      )
     ),
+    
     tabPanel(
       "Sample by Term",
->>>>>>> bf002e08161fec3d6692d61c3727213698c56375
+
       titlePanel("Sample 100 Tweets/Retweets by Term"),
       sidebarLayout(
         sidebarPanel(
@@ -45,17 +43,13 @@ ui <- shinyUI(
         ),
         mainPanel(
           tableOutput("key_tweets")
-<<<<<<< HEAD
         )
-=======
->>>>>>> bf002e08161fec3d6692d61c3727213698c56375
         )
       ),
   
     tabPanel(
     "HashTag",
     titlePanel("HashTag"),
-<<<<<<< HEAD
       sidebarLayout(
         sidebarPanel(
           width = 3,
@@ -84,16 +78,20 @@ ui <- shinyUI(
               ticks = TRUE,
               animate = FALSE
             )
-=======
+          )
+         ),
+    tabPanel(
     sidebarLayout(
-      sidebarPanel(
-        width = 3,
-        textInput(inputId = "hashtag", "Which hashtag would you like to look up?")
-      ),
-      mainPanel(
-        tableOutput("scripts/twitter.R")
+        sidebarPanel(
+          width = 3,
+          textInput(inputId = "hashtag", "Which hashtag would you like to look up?")
+        ),
+        mainPanel(
+          tableOutput("scripts/twitter.R")
+        )
       )
     ),
+    
     tabPanel(
       "Most Retweeted",
       titlePanel("Top 5 Tweets/Retweets by Retweets"),
@@ -102,7 +100,6 @@ ui <- shinyUI(
           textInput("top_5",
             label = "Top 5 Tweets/Retweets from a Random Sample",
             value = "Trump"
->>>>>>> bf002e08161fec3d6692d61c3727213698c56375
           ),
           sliderInput("quantity",
             label = "Select of Sample Size",
@@ -118,9 +115,8 @@ ui <- shinyUI(
           tableOutput("tweets_tbl")
         )
       )
-  )
-<<<<<<< HEAD
+    )
+
 )
-=======
 )
->>>>>>> bf002e08161fec3d6692d61c3727213698c56375
+
