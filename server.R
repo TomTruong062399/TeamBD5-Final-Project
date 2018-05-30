@@ -28,8 +28,7 @@ shinyServer(
     output$tweets_tbl <- renderTable({
       tweets()[, c("Twitter Handle", "Tweet", "Number of Retweets")]
     })
-    
-    
+
     output$plot <- renderPlot({
       tweet_info <- searchTwitter(paste0("#", input$hashtag), 50)
       tweet_info_df <- twListToDF(tweet_info)
@@ -55,15 +54,16 @@ shinyServer(
         arrange(n)
 
 
-   is.data.frame(binary_sentiment)   
+   is.data.frame(binary_sentiment)
       total_score <- tweet_score$score * tweet_score$n
 
-
       # I would like to point out that it was NOT easy to get those colors right
-      positivity_plot <- ggplot(data = tweet_score, aes(x = factor(word), y = total_score)) +
+      positivity_plot <- ggplot(data = tweet_score, aes(x = factor(word),
+                                                        y = total_score)) +
         geom_bar(aes(fill = total_score < 0), stat = "identity") +
         theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-        scale_fill_manual(guide = FALSE, breaks = c(TRUE, FALSE), values = c("green", "red")) +
+        scale_fill_manual(guide = FALSE, breaks = c(TRUE, FALSE),
+                          values = c("green", "red")) +
         labs(
           x = "Most Common Words in Tweets",
           y = "Positivity Score",
@@ -74,7 +74,8 @@ shinyServer(
       # Using only 3 through 8 since 'positive' and 'negative are by
       # far the most popular sentiments, although they cannot be used
 
-      sentiment <- ggplot(binary_sentiment, aes(x = factor(word, levels = unique(word)), y = n)) +
+      sentiment <- ggplot(binary_sentiment, aes(x = factor(word,
+                                              levels = unique(word)), y = n)) +
         geom_bar(stat = "identity", aes(fill = factor(sentiment))) +
         coord_flip() +
         labs(
@@ -89,23 +90,20 @@ shinyServer(
         ncol = 2, nrow = 1
       )
     })
-    
-    
+
     output$plot2 <- renderPlot({
       search <- searchTwitter(input$hashtag)
       popular_tweets <- twListToDF(search)
       bar_stuff <- popular_tweets %>%
         select(screenName, retweetCount)
-      
-      
+
       bar_plot <- ggplot(bar_stuff, aes(screenName, retweetCount))
       bar_plot + geom_bar(stat = "identity", fill = "#FF6666") +
         xlab("Usernames") +
         ylab("Retweet Count") +
         theme(axis.text.x = element_text(angle = 90, hjust = 1))
     })
-    
-    
+
     output$pol_wordcloud <- renderPlot({
       sample_tweets <- searchTwitter(input$Politician,
                                      lang = input$lang,
@@ -126,9 +124,8 @@ shinyServer(
         stopwords(input$lang)
       )
       Sample_tweets_corpus <- tm_map(Sample_tweets_corpus, stripWhitespace)
-      
+
       # Filter commonly used words for more accurate representation
-      
       Sample_tweets_corpus <- tm_map(
         Sample_tweets_corpus, removeWords,
         c(

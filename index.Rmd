@@ -2,7 +2,9 @@
 title: "Team BD5 - Final Project"
 author: "Samuel Buxton, Moses Chong, Tom Truong, Will Park, ZubairAhmed Amjad"
 date: "May 30, 2018"
-output: html_document
+output:
+  html_document:
+    css: ./www/style.css
 runtime: shiny
 ---
 
@@ -72,7 +74,9 @@ library(jsonlite)
 library(dplyr)
 library(ggplot2)
 library(twitteR)
-library(shinythemes)
+library(RCurl)
+library(tm)
+library(wordcloud)
 
 source("api-keys.R")
 source("./scripts/key_terms.R")
@@ -82,6 +86,7 @@ setup_twitter_oauth(consumer_public, consumer_private, public_key, private_key)
 shinyApp(
   ui <- shinyUI(
   navbarPage(
+    theme = "./www/style.css",
     "Final Project",
     tabPanel(
       "Sample by Term",
@@ -89,59 +94,85 @@ shinyApp(
       sidebarLayout(
         sidebarPanel(
           textInput("term",
-                    label = "Search for a Term",
-                    value = "Trump"
+            label = "Search for a Term",
+            value = "Trump"
           )
         ),
         mainPanel(
           tableOutput("key_tweets")
         )
       )
-      ),
-      tabPanel(
-        "HashTag",
-        titlePanel("HashTag"),
-        sidebarLayout(
-          sidebarPanel(
-            width = 3,
-            textInput("hashtag",
-                      label = "Search for a Term",
-                      value = "Trump")
-          ),
-          mainPanel(
-            plotOutput("plot"),
-            plotOutput("plot2")
+    ),
+    tabPanel(
+      "HashTag",
+      titlePanel("HashTag"),
+      sidebarLayout(
+        sidebarPanel(
+          width = 3,
+          textInput("hashtag",
+            label = "Search for a Term",
+            value = "Trump"
           )
+        ),
+        mainPanel(
+          plotOutput("plot"),
+          plotOutput("plot2")
         )
-      ),
-      tabPanel(
-        "Most Retweeted",
-        titlePanel("Top 5 Tweets/Retweets by Retweets"),
-        sidebarLayout(
-          sidebarPanel(
-            textInput("top_5",
-                      label = "Top 5 Tweets/Retweets from a Random Sample",
-                      value = "Trump"
-            ),
-            sliderInput("quantity",
-                        label = "Select of Sample Size",
-                        min = 1,
-                        max = 1000,
-                        value = 500,
-                        ticks = TRUE,
-                        animate = FALSE
-            )
+      )
+    ),
+    tabPanel(
+      "Most Retweeted",
+      titlePanel("Top 5 Tweets/Retweets by Retweets"),
+      sidebarLayout(
+        sidebarPanel(
+          textInput("top_5",
+            label = "Top 5 Tweets/Retweets from a Random Sample",
+            value = "Trump"
           ),
-          mainPanel(
-            plotlyOutput("tweets_plot"),
-            tableOutput("tweets_tbl")
+          sliderInput("quantity",
+            label = "Select of Sample Size",
+            min = 1,
+            max = 1000,
+            value = 500,
+            ticks = TRUE,
+            animate = FALSE
           )
+        ),
+        mainPanel(
+          plotlyOutput("tweets_plot"),
+          tableOutput("tweets_tbl")
+        )
+      )
+    ),
+    tabPanel(
+      "Word Cloud",
+      titlePanel("Trends in Words That are Used Most Commonly in Relation
+                 to a Politician"),
+      sidebarLayout(
+        sidebarPanel(
+          width = 2,
+          textInput("Politician",
+            label = "Enter Politician Name",
+            value = "Trump"
+          ),
+          sliderInput("Number", "Select Number of Tweets",
+            min = 50, max = 500, value = 275
+          ),
+          radioButtons("lang", "Select Language", c(
+            "English" = "en",
+            "Spanish" = "es"
+          )),
+          submitButton(text = "Run")
+        ),
+        mainPanel(
+          plotOutput("pol_wordcloud", width = "1500px", height = "1000px")
         )
       )
     )
-  ),
+  )
+),
 
-  server = function(input, output) {
+  server <- function(input, output) {
     output$key_tweets <- renderTable({
       return(term_search(input$term))
     })
@@ -154,7 +185,6 @@ shinyApp(
     output$tweets_tbl <- renderTable({
       tweets()[, c("Twitter Handle", "Tweet", "Number of Retweets")]
     })
-
 
     output$plot <- renderPlot({
       tweet_info <- searchTwitter(paste0("#", input$hashtag), 50)
@@ -183,7 +213,6 @@ shinyApp(
 
    is.data.frame(binary_sentiment)
       total_score <- tweet_score$score * tweet_score$n
-
 
       # I would like to point out that it was NOT easy to get those colors right
       positivity_plot <- ggplot(data = tweet_score, aes(x = factor(word),
@@ -219,19 +248,60 @@ shinyApp(
       )
     })
 
-
     output$plot2 <- renderPlot({
       search <- searchTwitter(input$hashtag)
       popular_tweets <- twListToDF(search)
       bar_stuff <- popular_tweets %>%
         select(screenName, retweetCount)
 
-
       bar_plot <- ggplot(bar_stuff, aes(screenName, retweetCount))
       bar_plot + geom_bar(stat = "identity", fill = "#FF6666") +
         xlab("Usernames") +
         ylab("Retweet Count") +
         theme(axis.text.x = element_text(angle = 90, hjust = 1))
+    })
+
+    output$pol_wordcloud <- renderPlot({
+      sample_tweets <- searchTwitter(input$Politician,
+                                     lang = input$lang,
+                                     n = input$Number,
+                                     resultType = "recent"
+      )
+      Sample_tweets_text <- sapply(sample_tweets, function(x) x$getText())
+      Sample_tweets_text2 <- iconv(
+        Sample_tweets_text, "latin1",
+        "ASCII//TRANSLIT"
+      )
+      Sample_tweets_text3 <- iconv(Sample_tweets_text2, to = "ASCII//TRANSLIT")
+      Sample_tweets_corpus <- Corpus(VectorSource(Sample_tweets_text3))
+      Sample_tweets_corpus <- tm_map(Sample_tweets_corpus, tolower)
+      Sample_tweets_corpus <- tm_map(Sample_tweets_corpus, removePunctuation)
+      Sample_tweets_corpus <- tm_map(
+        Sample_tweets_corpus, removeWords,
+        stopwords(input$lang)
+      )
+      Sample_tweets_corpus <- tm_map(Sample_tweets_corpus, stripWhitespace)
+
+      # Filter commonly used words for more accurate representation
+      Sample_tweets_corpus <- tm_map(
+        Sample_tweets_corpus, removeWords,
+        c(
+          "trump", "donald", "president", "america",
+          "hillary", "americans", "think", "says",
+          "call", "know", "will", "claimed", "even",
+          "every", "amp", "said", "voted", "rt",
+          "realdonaldtrump", "therealroseanne",
+          "now", "made", "let", "like", "just",
+          "yesterday", "makes", "knows", "someone",
+          "called", "comments", "got", "one", "many",
+          "knew", "knows"
+        )
+      )
+      pal2 <- brewer.pal(8, "Dark2")
+      wordcloud(Sample_tweets_corpus,
+                random.order = FALSE,
+                colors = pal2
+      )
     })
   },
   
