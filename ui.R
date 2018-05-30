@@ -1,5 +1,6 @@
 library(shiny)
 library(plotly)
+source("scripts/twitter.R")
 
 ui <- shinyUI(navbarPage(
   "Insert Project Name",
@@ -28,8 +29,8 @@ ui <- shinyUI(navbarPage(
       ),
       mainPanel(
         tableOutput("scripts/twitter.R")
-      ),
-
+      )
+    ),  
       tabPanel(
         "Most Retweeted",
         titlePanel("Top 5 Tweets/Retweets by Retweets"),
