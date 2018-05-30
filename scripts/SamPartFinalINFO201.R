@@ -1,5 +1,5 @@
 # This is where I wrote all the graph code! (Testing ground)
-install.packages(tidytext)
+# install.packages(tidytext)
 library(tidytext)
 library(httr)
 library(jsonlite)
@@ -11,9 +11,6 @@ library(ggpubr)
 
 ?get_sentiments
 ?inner_join
-source("api-keys.R")
-setup_twitter_oauth(consumer_public, consumer_private, public_key, private_key)
-
 
 conservative_tweets <- searchTwitter("#Conservatives") 
 conservative.df <- twListToDF(conservative_tweets)
