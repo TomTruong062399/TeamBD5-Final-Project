@@ -5,6 +5,7 @@ library(ggpubr)
 
 ui <- shinyUI(
   navbarPage(
+    theme = "style.css",
     "Final Project",
     tabPanel(
       "Sample by Term",
