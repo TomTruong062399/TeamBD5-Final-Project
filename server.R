@@ -5,6 +5,9 @@ library(plotly)
 library(dplyr)
 library(ggplot2)
 library(twitteR)
+library(RCurl)
+library(tm)
+library(wordcloud)
 
 source("api-keys.R")
 source("./scripts/key_terms.R")
@@ -52,17 +55,21 @@ shinyServer(
         arrange(n)
 
 
-   is.data.frame(binary_sentiment)
+      is.data.frame(binary_sentiment)
       total_score <- tweet_score$score * tweet_score$n
 
 
       # I would like to point out that it was NOT easy to get those colors right
-      positivity_plot <- ggplot(data = tweet_score, aes(x = factor(word),
-                                                        y = total_score)) +
+      positivity_plot <- ggplot(data = tweet_score, aes(
+        x = factor(word),
+        y = total_score
+      )) +
         geom_bar(aes(fill = total_score < 0), stat = "identity") +
         theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-        scale_fill_manual(guide = FALSE, breaks = c(TRUE, FALSE),
-                          values = c("green", "red")) +
+        scale_fill_manual(
+          guide = FALSE, breaks = c(TRUE, FALSE),
+          values = c("green", "red")
+        ) +
         labs(
           x = "Most Common Words in Tweets",
           y = "Positivity Score",
@@ -74,7 +81,8 @@ shinyServer(
       # far the most popular sentiments, although they cannot be used
 
       sentiment <- ggplot(binary_sentiment, aes(x = factor(word,
-                                              levels = unique(word)), y = n)) +
+        levels = unique(word)
+      ), y = n)) +
         geom_bar(stat = "identity", aes(fill = factor(sentiment))) +
         coord_flip() +
         labs(
@@ -103,6 +111,47 @@ shinyServer(
         xlab("Usernames") +
         ylab("Retweet Count") +
         theme(axis.text.x = element_text(angle = 90, hjust = 1))
+    })
+
+
+    output$pol_wordcloud <- renderPlot({
+      sample_tweets <- searchTwitter(input$Politician,
+        lang = input$lang,
+        n = input$Number,
+        resultType = "recent"
+      )
+      Sampletweets_text <- sapply(sample_tweets, function(x) x$getText())
+      Sampletweets_text2 <- iconv(
+        Sampletweets_text, "latin1",
+        "ASCII//TRANSLIT"
+      )
+      Sampletweets_text3 <- iconv(Sampletweets_text2, to = "ASCII//TRANSLIT")
+      Sampletweets_corpus <- Corpus(VectorSource(Sampletweets_text3))
+      Sampletweets_corpus <- tm_map(Sampletweets_corpus, tolower)
+      Sampletweets_corpus <- tm_map(Sampletweets_corpus, removePunctuation)
+      Sampletweets_corpus <- tm_map(
+        Sampletweets_corpus, removeWords,
+        stopwords(input$lang)
+      )
+      Sampletweets_corpus <- tm_map(Sampletweets_corpus, stripWhitespace)
+
+      # Filter commonly used words for more accurate representation
+
+      Sampletweets_corpus <- tm_map(
+        Sampletweets_corpus, removeWords,
+        c(
+          "trump", "donald", "president", "america",
+          "hillary", "americans", "think", "says",
+          "call", "know", "will", "claimed", "even",
+          "every", "amp", "said", "voted", "rt",
+          "realdonaldtrump", "therealroseanne",
+          "now", "made", "let", "like", "just",
+          "yesterday", "makes", "knows", "someone",
+          "called", "comments", "got", "one"
+        )
+      )
+      pal2 <- brewer.pal(8, "Dark2")
+      wordcloud(Sampletweets_corpus, random.order = FALSE, colors = pal2)
     })
   }
 )
