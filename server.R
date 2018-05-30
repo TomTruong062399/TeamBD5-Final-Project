@@ -72,7 +72,7 @@ shinyServer(
       # Using only 3 through 8 since 'positive' and 'negative are by
       # far the most popular sentiments, although they cannot be used
 
-      sentiment <- ggplot(binary_sentiment[3:8, ], aes(x = rev(factor(word, levels = unique(word))), y = n)) +
+      sentiment <- ggplot(binary_sentiment[3:8, ], aes(x = factor(word, levels = unique(word)), y = n)) +
         geom_bar(stat = "identity", aes(fill = factor(sentiment))) +
         coord_flip() +
         labs(
