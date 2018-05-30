@@ -19,14 +19,20 @@ ui <- shinyUI(
           tableOutput("key_tweets")
         )
       )
+<<<<<<< HEAD
       ),
       
+=======
+    ),
+    
+>>>>>>> 8ca0beb9fbf68334cac0325da74caae72ab38bc2
       tabPanel(
         "HashTag",
         titlePanel("HashTag"),
         sidebarLayout(
           sidebarPanel(
             width = 3,
+<<<<<<< HEAD
             textInput(inputId = "hashtag", "Which hashtag would you like to look up?")
           ),
           mainPanel(
@@ -60,3 +66,40 @@ ui <- shinyUI(
       )
     )
   )
+=======
+            textInput("term", label = "Search for Term", value = "#Trump")
+          ),
+          mainPanel(
+            tableOutput("hash_tag.R")
+          )
+        )
+      ),
+    
+      tabPanel(
+        "Most Retweeted",
+        titlePanel("Top 5 Tweets/Retweets by Retweets"),
+        sidebarLayout(
+          sidebarPanel(
+            textInput("top_5",
+              label = "Top 5 Tweets/Retweets from a Random Sample",
+              value = "Trump"
+            ),
+            sliderInput("quantity",
+              label = "Select of Sample Size",
+              min = 1,
+              max = 1000,
+              value = 500,
+              ticks = TRUE,
+              animate = FALSE
+            )
+          ),
+
+          mainPanel(
+            plotlyOutput("tweets_plot"),
+            tableOutput("tweets_tbl")
+          )
+        )
+      )
+    )
+  )
+>>>>>>> 8ca0beb9fbf68334cac0325da74caae72ab38bc2
